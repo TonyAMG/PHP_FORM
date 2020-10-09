@@ -170,7 +170,7 @@ header("Content-Type: text/html; charset=utf-8");
                 <label>
                 Выбери пол:
                 <input id="sex_male" type="radio" name="sex" value="male" <?=($sex==='male' || empty($raw_sex))?'checked':'' ?>> <label for="sex_male">мужской</label>
-                <input id="female" type="radio" name="sex" value="female" <?=                    ($sex==='female')?'true':'false' ?>> <label for="female">женский</label>
+                <input id="female" type="radio" name="sex" value="female" <?=                    ($sex==='female')?'checked':'' ?>> <label for="female">женский</label>
                 </label>
             </p>
             <p>
