@@ -9,6 +9,17 @@ $today_year = date("Y");
 $email = "";
 $about_yourself = "";
 
+require_once (__DIR__ . '/config/config.php');
+require_once (__DIR__ . '/config/error_msg.php');
+
+
+
+
+
+
+
+
+
 /*
 // config/form_contact_validation.php
 
@@ -49,6 +60,89 @@ function sanitizer($string, $max_length) {
     $string = mb_substr($string, 0, $max_length);
     return $string;
 }
+
+//функция извлечения $_POST
+function postReaper($inputs_properties) {
+    $ip = $inputs_properties;
+    foreach ($ip as $key => $value) {
+        if (isset($ip[$key]["max_length"])) {
+            @$sanitized_post[$key] = mb_substr($_POST[$key], 0, $ip[$key]["max_length"]);
+        } else {
+            @$sanitized_post[$key] = $_POST[$key];
+        }
+        $sanitized_post[$key] = htmlspecialchars(trim($sanitized_post[$key]));
+    }
+    return $sanitized_post;
+}
+
+
+//обработчик ошибок
+function error_handler() {}
+
+
+//сверка с базой данной
+function dbCheck($sanitized_post, $inputs_properties, &$validation_error, $error_msg, $db_check) {
+    $ip = $inputs_properties;
+    $sp = $sanitized_post;
+    foreach ($sp as $key => $value) {
+        echo "$key => $value<br>";
+        //valid - если данные должны быть в БД
+        if (isset($ip[$key]["db_check"])) {
+            if (in_array($sp[$key], $db_check[$key])) {
+                $validated_post_db[$key] = $sp[$key];
+            } else {
+                $validation_error .= $error_msg[$key]["db_check"];
+            }
+        }
+        //valid - если данные НЕ должны быть в БД
+        if (isset($ip[$key]["db_check_reverse"])) {
+            if (!in_array($sp[$key], $db_check[$key])) {
+                $validated_post_db[$key] = $sp[$key];
+            } else {
+                $validation_error .= $error_msg[$key]["db_check"];
+            }
+        }
+    }
+    return @$validated_post_db;
+}
+
+//валидатор на основе filter_var()
+function validator($sanitized_post, $inputs_properties, $error_msg, $validated_post_db, &$validation_error) {
+    $ip = $inputs_properties;
+    $sp = $sanitized_post;
+    foreach ($sp as $key => $value) {
+        if (isset($ip[$key]["filter"])) {
+            if (isset($ip[$key]["filter_var_options"])) {
+                if (filter_var($sp[$key], $ip[$key]["filter"], $ip[$key]["filter_var_options"])) {
+                    $validated_post[$key] = $sp[$key];
+                } else {
+                    $validation_error .= $error_msg[$key]["validator"];
+                }
+            } else {
+                if (filter_var($sp[$key], $ip[$key]["filter"])) {
+                    $validated_post[$key] = $sp[$key];
+                } else {
+                    $validation_error .= $error_msg[$key]["validator"];
+                }
+            }
+        }
+    }
+    return $validated_post;
+}
+$sanitized_post = postReaper($inputs_properties);
+$validated_post_db = dbCheck(postReaper($inputs_properties), $inputs_properties,$validation_error, $error_msg, $db_check);
+$validated_post = validator(postReaper($inputs_properties), $inputs_properties, $error_msg, $validated_post_db, $validation_error);
+
+
+//foreach ($validated_post_db as $key => $value) {
+    /*if (isset($inputs_properties[$key]["filter"]) && (isset($inputs_properties[$key]["db_check"]) || isset($inputs_properties[$key]["db_check_reverse"]))) {
+        echo "Hi!";
+        //$correct_post[$key] = $validated_post_db[$key];
+        //$correct_post[$key] = $validated_post[$key];
+    }*/
+    //echo "$key => $value<br>";
+//}
+
 
 #################################
 ##### блок валидации данных #####
@@ -183,7 +277,7 @@ header("Content-Type: text/html; charset=utf-8");
             <p>
                 <label>
                     Год рождения:
-                    <input type="text" maxlength="4" name="birth_year" value="<?=$raw_birth_year??''?>">
+                    <input type="text" maxlength="10" name="birth_year" value="<?=$raw_birth_year??''?>">
                     <span class="description">(1920 - <?=$today_year?>)</span>
                 </label>
             </p>
@@ -195,7 +289,7 @@ header("Content-Type: text/html; charset=utf-8");
                 </label>
             </p>
             <p>
-                <span class="error"><?=$validation_error?></span>
+                <span class="error"><?=$validation_error??''?></span>
             </p>
             <p>
                 <input type="submit" value="Отправить">
@@ -220,9 +314,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo '<hr><p><b><span class="accepted">Поздравляю, ты верно всё заполнил!</b></p>';
     }
 
+
+    foreach ($validated_post_db as $key => $value) {echo '<p>'.$key.'<span class="accepted">=> '.$value.'</span></p>';}
+    echo "<hr>";
+    foreach ($validated_post as $key => $value) {echo '<p>'.$key.'<span class="accepted">=> '.$value.'</span></p>';}
+    echo "<hr><pre>", print_r($validated_post) ,"</pre>";
+    //var_dump($correct_post);
     //echo "<hr><pre>", print_r($_REQUEST) ,"</pre>";
     //echo "<hr><pre>", print_r($_FILES) ,"</pre>";
     //echo mb_internal_encoding();
+    echo "<hr><pre>", print_r(postReaper($inputs_properties)) ,"</pre>";
+    //echo $inputs['name']['min_length'];
 }
 
 ?>

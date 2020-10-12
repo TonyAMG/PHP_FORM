@@ -1,0 +1,7 @@
+        <h2><?=@$_POST["button"]?"Предпросмотр":''?></h2>
+        <p><b><?=@$correct_post["name"]?"Имя:":''?></b>                 <span class="accepted"><?=@$correct_post["name"]?></span></p>
+        <p><b><?=@$correct_post["password"]?"Пароль:":''?></b>          <span class="accepted"><?=@$correct_post["password"]?></span></p>
+        <p><b><?=@$correct_post["sex"]?"Пол:":''?></b>                  <span class="accepted"><?=@($correct_post["sex"] === "male")?'мужской':'женский'?></span></p>
+        <p><b><?=@$correct_post["email"]?"Email:":''?></b>              <span class="accepted"><?=@$correct_post["email"]?></span></p>
+        <p><b><?=@$correct_post["birth_year"]?"Год рождения:":''?></b>  <span class="accepted"><?=@$correct_post["birth_year"]?></span></p>
+        <p><b><?=@$correct_post["about_yourself"]?"О себе:":''?></b>    <span class="accepted"><?=@$correct_post["about_yourself"]?></span></p>
