@@ -18,7 +18,7 @@ header("Cache-Control: no-cache");
 header("Content-Type: text/html; charset=utf-8");
 
 //выводим HTML-форму
-html_render('/templates/registration_form.html', "", $sanitized_post, $validation_error);
+html_render('/templates/registration_form.html', "", @$sanitized_post, @$validation_error);
 
 //блок предпросмотра введённой информации
 //появляется только после отправки формы

@@ -1,8 +1,5 @@
 <?php
 
-//$sanitized_post = ["sex" => "male"];
-$validated_post_db = [];
-
 //список доступных input с формы
 //"название_параметра"      =>  ["его свойства"]
 $inputs_properties = [
