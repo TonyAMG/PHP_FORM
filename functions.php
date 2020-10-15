@@ -104,7 +104,7 @@ function phpMailer($form, $email) {
         $mail->Host       = 'smtp.gmail.com';                    // Set the SMTP server to send through
         $mail->SMTPAuth   = true;                                   // Enable SMTP authentication
         $mail->Username   = '2005test2005test';                     // SMTP username
-        $mail->Password   = '2005test2005test2005';                               // SMTP password
+        $mail->Password   = 'password';                               // SMTP password
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;         // Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
         $mail->Port       = 465;                                    // TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above
 
