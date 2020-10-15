@@ -1,7 +1,13 @@
-        <h2><?=@$_POST["button"]?"Предпросмотр":''?></h2>
-        <p><b><?=@$correct_post["name"]?"Имя:":''?></b>                 <span class="accepted"><?=@$correct_post["name"]?></span></p>
-        <p><b><?=@$correct_post["password"]?"Пароль:":''?></b>          <span class="accepted"><?=@$correct_post["password"]?></span></p>
-        <p><b><?=@$correct_post["sex"]?"Пол:":''?></b>                  <span class="accepted"><?=@($correct_post["sex"] === "male")?'мужской':'женский'?></span></p>
-        <p><b><?=@$correct_post["email"]?"Email:":''?></b>              <span class="accepted"><?=@$correct_post["email"]?></span></p>
-        <p><b><?=@$correct_post["birth_year"]?"Год рождения:":''?></b>  <span class="accepted"><?=@$correct_post["birth_year"]?></span></p>
-        <p><b><?=@$correct_post["about_yourself"]?"О себе:":''?></b>    <span class="accepted"><?=@$correct_post["about_yourself"]?></span></p>
+        <h2><?=(@count($correct_post) > 0)?"Предпросмотр":''?></h2>
+        <p><b><?=@$correct_post["name"]?"Имя:":''?></b>                         <span class="accepted"><?=@$correct_post["name"]?></span></p>
+        <p><b><?=@$correct_post["password"]?"Пароль:":''?></b>                  <span class="accepted"><?=@$correct_post["password"]?></span></p>
+        <p><b><?=@$correct_post["sex"]?"Пол:":''?></b>                          <span class="accepted"><?=@($correct_post["sex"] === "male")?'мужской':''?><?=@($correct_post["sex"] === "female")?'женский':''?></span></p>
+        <p><b><?=@$correct_post["email"]?"Email:":''?></b>                      <span class="accepted"><?=@$correct_post["email"]?></span></p>
+        <p><b><?=@$correct_post["birth_year"]?"Год рождения:":''?></b>          <span class="accepted"><?=@$correct_post["birth_year"]?></span></p>
+        <p><b><?=@$correct_post["about_yourself"]?"О себе:":''?></b>            <span class="accepted"><?=@$correct_post["about_yourself"]?></span></p>
+        <p><b><?=@$correct_post["send_email"]?'Флажок отправки:</b>             <span class="accepted">отмечен</span></p>':''?>
+        <?=@$file_correct ? '
+                <p><b>Фото:</b> <span class="accepted">загружено</span></p>
+                <img src="http://'.$_SERVER["HTTP_HOST"].'/PHP_FORM/upload/Photo.jpg" alt="Твоё фото" width="300" height="500" loading="lazy">
+                <p><a href="http://'.$_SERVER["HTTP_HOST"].'/PHP_FORM/upload/Photo.jpg">Скачать фото</a></p>
+        ':''?>

@@ -1,0 +1,73 @@
+
+        <!--############################# ФОРМА ВВОДА #############################-->
+        <p>
+            <?=(count(array_filter($_SESSION))  && @!($_SERVER['HTTP_REFERER'] === "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]") && @!($_SERVER['HTTP_REFERER'] === "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]?reset")) ? '
+                <hr><span class="returned">Сервер обнаружил, что ты уже был на данной странице и пытался её заполнить.</span><br>
+            <a class="a2" href="'.$_SERVER['PHP_SELF'].'">Продолжить</a> | <a class="a1" href="'.$_SERVER['PHP_SELF'].'?reset">Сбросить</a><hr> ' : '' ?>
+        </p>
+        <form method="post" action="<?=$_SERVER['PHP_SELF']?>" enctype="multipart/form-data">
+            <p>
+                <label>
+                    Введи имя:<?=spaceGen(12)?>
+                    <input type="text" maxlength="20" name="name" value="<?=$_SESSION["name"] ?? @$sanitized_post["name"] ?>">
+                    <span class="description">( _, латиница, цифры; мин. 5 - макс. 20 символов)</span>
+                </label>
+            </p>
+            <p>
+                <label>
+                    Создай пароль:<?=spaceGen(5)?>
+                    <input type="password" maxlength="30" name="password" value="<?=$_SESSION["password"] ?? @$sanitized_post["password"] ?>">
+                    <span class="description">( _, латиница, цифры; мин. 10 - макс. 30 символов)</span>
+                </label>
+            </p>
+            <p>
+                <label>
+                    Выбери пол:<?=spaceGen(9)?>
+                    <input id="sex_male" type="radio" name="sex" value="male"
+                        <?=(@$sanitized_post["sex"]==='male'   || @$_SESSION["sex"] === 'male')   ? 'checked' : '' ?>> <label for="sex_male">мужской</label>
+                    <input id="female" type="radio" name="sex" value="female"
+                        <?=(@$sanitized_post["sex"]==='female' || @$_SESSION["sex"] === 'female') ? 'checked' : '' ?>> <label for="female">женский</label>
+                </label>
+            </p>
+            <p>
+                <label>
+                    Введи email:<?=spaceGen(10)?>
+                    <input type="text" size="20" maxlength="50" name="email" value="<?=$_SESSION["email"] ?? @$sanitized_post["email"] ?>">
+                    <span class="description">(макс. 50 символов)</span>
+                </label>
+            </p>
+            <p>
+                <label>
+                    Год рождения:<?=spaceGen(7)?>
+                    <input type="text" maxlength="4" name="birth_year" value="<?=$_SESSION["birth_year"] ?? @$sanitized_post["birth_year"] ?>">
+                    <span class="description">(1920 - 2020)</span>
+                </label>
+            </p>
+
+            <p>
+                <label>
+                    <span style="float: left;">Кратко о себе:<?=spaceGen(8)?></span><br>
+                    <textarea style="float: left;" name="about_yourself" rows="5" cols="37" wrap="hard"><?=$_SESSION["about_yourself"] ?? @$sanitized_post ?></textarea>
+                    <br><br><span style="float: left;" class="description">&nbsp;(не более 200 символов)</span>
+                </label>
+            </p>
+            <p>
+                <label>
+                    <br><br><br>
+                    Загрузи своё фото
+                    <input type="file" id="profile_pic" name="profile_pic" accept=".jpg, .jpeg, .png">
+                </label>
+            </p>
+            <p>
+                <label>
+                    <input type="checkbox" name="send_email" value="yes" <?=(@$sanitized_post["send_email"] === 'yes' || @$_SESSION["send_email"] === 'yes') ? 'checked' : '' ?>>
+                    Отправить форму и фото на почту
+                </label>
+            </p>
+            <p>
+                <input name="button" type="hidden" value="pushed">
+            </p>
+            <p>
+                <input type="submit" value="Зарегистрироваться">
+            </p>
+        </form>

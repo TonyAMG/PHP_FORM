@@ -1,5 +1,10 @@
 <?php
 
+//неймсмпейс для использования PHPMailer
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
+
 //функция извлечения и дезинфекции $_POST
 function postReaper($inputs_properties) {
     $ip = $inputs_properties;
@@ -10,8 +15,19 @@ function postReaper($inputs_properties) {
             @$sanitized_post[$key] = $_POST[$key];
         }
         $sanitized_post[$key] = htmlspecialchars(trim($sanitized_post[$key]));
+        //записываем дезинфицированные данные в сессию
+        $_SESSION[$key] = $sanitized_post[$key];
     }
     return $sanitized_post;
+}
+
+//загрузка файла
+function fileHandler($upload_file, $error_msg, &$file_correct, &$validation_error) {
+    if (move_uploaded_file($_FILES['profile_pic']['tmp_name'], $upload_file)) {
+        $file_correct = TRUE;
+    } else {
+        $validation_error .= $error_msg["file"]["file_handler"];
+    }
 }
 
 //сверка с базой данной
@@ -64,12 +80,66 @@ function validator($sanitized_post, $inputs_properties, $error_msg, $validated_p
 }
 
 //функция вывода HTML-шаблона
-function html_render($html_file, $correct_post="", $sanitized_post="", $validation_error=""){
+function htmlRender($html_file, $correct_post="", $sanitized_post="", $validation_error="", $file_correct="", $call_type=""){
     ob_start();
-    require(dirname(__FILE__) . $html_file);
+    require __DIR__ . $html_file;
     $template = ob_get_contents();
     ob_end_clean();
-    echo $template;
+    if ($call_type === "return") {
+        return $template;
+    } else {
+        echo $template;
+    }
 }
 
-?>
+//функция отправки формы на email
+function phpMailer($form, $email) {
+    // Instantiation and passing `true` enables exceptions
+    $mail = new PHPMailer(true);
+
+    try {
+        //Server settings
+        //$mail->SMTPDebug = SMTP::DEBUG_SERVER;                      // Enable verbose debug output
+        $mail->isSMTP();                                            // Send using SMTP
+        $mail->Host       = 'smtp.gmail.com';                    // Set the SMTP server to send through
+        $mail->SMTPAuth   = true;                                   // Enable SMTP authentication
+        $mail->Username   = '2005test2005test';                     // SMTP username
+        $mail->Password   = '2005test2005test2005';                               // SMTP password
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;         // Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
+        $mail->Port       = 465;                                    // TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above
+
+        //Recipients
+        $mail->setFrom('2005test2005test@gmail.com', 'Mailer');
+        //$mail->addAddress('ellen@example.com', 'Tony');     // Add a recipient
+        $mail->addAddress($email);               // Name is optional
+        $mail->addReplyTo('2005test2005test@gmail.com', 'Information');
+        //$mail->addCC('cc@example.com');
+        //$mail->addBCC('bcc@example.com');
+
+        // Attachments
+        //$mail->addAttachment('/var/tmp/file.tar.gz');         // Add attachments
+        $mail->addAttachment(__DIR__.'/upload/Photo.jpg', 'Photo.jpg');    // Optional name
+
+        // Content
+        $mail->isHTML(true);                                  // Set email format to HTML
+        $mail->Subject = 'You have successfully registered!';
+        //$mail->Body    = 'This is the HTML message body <b>in bold!</b>';
+        $mail->Body    = $form;
+        $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
+
+        $mail->send();
+        echo 'Письмо было успешно отправлено!';
+    } catch (Exception $e) {
+        echo "Письмо не отправлено. Ошибка отправки: {$mail->ErrorInfo}";
+    }
+}
+
+//генератор пробелов ф html-форме
+function spaceGen($num) {
+    $space = '';
+    for ($i = 0; $i < $num; $i++) {
+        $space .= '&nbsp;';
+    }
+    return $space;
+}
+
